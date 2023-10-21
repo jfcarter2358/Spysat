@@ -1,0 +1,7 @@
+dist
+src/ui-dist
+.python-version
+temp
+__pycache__
+.pytest_cache
+.vscode

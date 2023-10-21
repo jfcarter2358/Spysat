@@ -1,0 +1,52 @@
+.variables:
+  architectures:
+    - amd64
+    - arm64
+  oses:
+    - darwin
+    - freebsd
+    - linux
+    - openbsd
+    - windows
+set-version:
+  help: Update server version constant from VERSION file
+  cmd: |
+    version = ?(cat VERSION).strip()
+    sed -i 's/const VERSION = ".*"/const VERSION = "{version}"/' src/constants/constants.go
+build:
+  help: Build Spysat
+  cmd: |
+    # Clean up environment
+    stud clean
+    mkdir -p dist
+
+    stud set-version
+
+    # Enter source directory for Spysat
+    cd src
+    
+    # Build Spysat for below oses and architectures and drop the binary into dist directories
+    for arch_name in architectures:
+      for os_name in oses:
+        os_name_upper = os_name.upper()
+        arch_name_upper = arch_name.upper()
+
+        header_string = f"** BUILDING FOR {os_name_upper}/{arch_name_upper} **"
+        header_width = len(header_string)
+        header_line = "*" * header_width
+
+        echo "{header_line}"
+        echo "{header_string}"
+        echo "{header_line}"
+
+        output_path = f"../../dist/{os_name}/{arch_name}"
+        mkdir -p "{output_path}"
+        env GOOS="{os_name}" GOARCH="{arch_name}" CGO_ENABLED=0 go build -v -o spysat
+        mv spysat "{output_path}"
+    
+    # Pop back up into root directory
+    cd ../..
+clean:
+  help: Remove build and test artifacts
+  cmd: |
+    rm -r dist || true

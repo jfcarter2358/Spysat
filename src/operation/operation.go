@@ -22,7 +22,7 @@ type Operation struct {
 var Operations Operation
 
 func LoadOperation() error {
-	yamlFile, err := ioutil.ReadFile(config.Config.ObserverPath)
+	yamlFile, err := ioutil.ReadFile(config.Config.OperationPath)
 
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func SaveOperation() error {
 		return err
 	}
 
-	err = os.WriteFile(config.Config.ObserverPath, data, 0777)
+	err = os.WriteFile(config.Config.OperationPath, data, 0777)
 	if err != nil {
 		return err
 	}

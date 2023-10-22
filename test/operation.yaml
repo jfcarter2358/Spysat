@@ -1,0 +1,130 @@
+probes:
+  a:
+    language: py
+    run: |
+      import time
+      import sys
+      foo = int(sys.argv[1])
+      bar = int(sys.argv[2])
+      print(f'{int(time.time())},{foo},{bar},0')
+    arguments:
+      - foo
+      - bar
+    interval: 5000
+  b:
+    language: sh
+    run: |
+      foo="$1"
+      bar="$2"
+      data_in="$(date +%s),0,0,0"
+      if [ -f "${script_directory}/${foo}_${bar}_output_old.txt" ]; then
+        cat "${script_directory}/${foo}_${bar}_output_old.txt" > "${script_directory}/output_new.txt"
+        echo "${data_in}" >> "${script_directory}/output_new.txt"
+        new_logs="$(diff --changed-group-format='%<' --unchanged-group-format='' "${script_directory}/output_new.txt" "${script_directory}/${foo}_${bar}_output_old.txt")"
+        echo "${new_logs}"
+      else
+        echo "${data_in}" > "${script_directory}/output_new.txt"
+      fi
+      cat "${script_directory}/output_new.txt" > "${script_directory}/${foo}_${bar}_output_old.txt"
+    arguments:
+      - foo
+      - bar
+    interval: 2000
+analysts:
+  a:
+    language: sh
+    run: |
+      echo "${data_in}"
+  b:
+    language: py
+    run: |
+      data_out = data_in.replace('0','9')
+      print(data_out)
+window:
+  layout: |
+    !------!
+  classes:
+    class1:
+      pading=x
+      top=y
+  elements:
+    el1:
+      class1
+observers:
+  a:
+    group: "DEV"
+    streams:
+      a:
+        headers:
+          - h1
+          - h2
+          - h3
+          - h4
+        types:
+          - int
+          - int
+          - int
+          - int
+        probe: a
+        analyst: a
+        arguments:
+          foo: 7
+          bar: 7
+  b:
+    group: "DEV"
+    streams:
+      a:
+        headers:
+          - h1
+          - h2
+          - h3
+          - h4
+        types:
+          - int
+          - int
+          - int
+          - int
+        probe: a
+        analyst: b
+        arguments:
+          foo: 8
+          bar: 8
+  c:
+    group: "PROD"
+    streams:
+      a:
+        headers:
+          - h1
+          - h2
+          - h3
+          - h4
+        types:
+          - int
+          - int
+          - int
+          - int
+        probe: b
+        analyst: a
+        arguments:
+          foo: 9
+          bar: 9
+  d:
+    group: "PROD"
+    streams:
+      a:
+        headers:
+          - h1
+          - h2
+          - h3
+          - h4
+        types:
+          - int
+          - int
+          - int
+          - int
+        probe: b
+        analyst: b
+        arguments:
+          foo: 1
+          bar: 1
+

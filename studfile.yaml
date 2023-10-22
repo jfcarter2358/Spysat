@@ -1,13 +1,13 @@
 .variables:
   architectures:
     - amd64
-    - arm64
+    # - arm64
   oses:
-    - darwin
-    - freebsd
+    # - darwin
+    # - freebsd
     - linux
-    - openbsd
-    - windows
+    # - openbsd
+    # - windows
 set-version:
   help: Update server version constant from VERSION file
   cmd: |
@@ -39,7 +39,7 @@ build:
         echo "{header_string}"
         echo "{header_line}"
 
-        output_path = f"../../dist/{os_name}/{arch_name}"
+        output_path = f"../dist/{os_name}/{arch_name}"
         mkdir -p "{output_path}"
         env GOOS="{os_name}" GOARCH="{arch_name}" CGO_ENABLED=0 go build -v -o spysat
         mv spysat "{output_path}"

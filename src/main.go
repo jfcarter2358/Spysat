@@ -31,7 +31,7 @@ func main() {
 
 	logger.Infof("", "Running with port: %d", config.Config.Port)
 
-	router.LoadHTMLGlob("templates/*")
+	// router.LoadHTMLGlob("templates/*")
 	initializeRoutes()
 
 	rand.Seed(time.Now().UnixNano())
@@ -41,11 +41,16 @@ func main() {
 		datastore.AddObserver(oName, o)
 	}
 
+	logger.Info("", "Creating probes")
 	for pName, p := range operation.Operations.Probes {
+		logger.Debugf("", "Checking probe %s", pName)
 		probeArgs := make(map[string]map[string]map[string]map[string]interface{})
 		for oName, o := range operation.Operations.Observers {
+			logger.Debugf("", "Checking observer %s", oName)
 			for sName, s := range o.Streams {
-				if sName == pName {
+				logger.Debugf("", "Checking stream %s", sName)
+				if s.Probe == pName {
+					logger.Infof("Associating probe %s with stream %s/%s", pName, oName, sName)
 					if _, ok := probeArgs[o.Group]; !ok {
 						probeArgs[o.Group] = make(map[string]map[string]map[string]interface{})
 					}
@@ -57,6 +62,7 @@ func main() {
 				}
 			}
 		}
+		logger.Tracef("", "Probe args: %v", probeArgs)
 		go probe.Run(p, probeArgs)
 	}
 	routerPort := fmt.Sprintf(":%d", config.Config.Port)

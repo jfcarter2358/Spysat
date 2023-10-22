@@ -14,11 +14,11 @@ const DEFAULT_CONFIG_PATH = "/home/scaffold/data/config.json"
 const ENV_PREFIX = "SPYSAT_"
 
 type ConfigObject struct {
-	Host         string `json:"host"`
-	Port         int    `json:"port"`
-	LogLevel     string `json:"log_level" env:"LOG_LEVEL"`
-	LogFormat    string `json:"log_format" env:"LOG_FORMAT"`
-	ObserverPath string `json:"observer_path" env:"OBSERVER_PATH"`
+	Host          string `json:"host"`
+	Port          int    `json:"port"`
+	LogLevel      string `json:"log_level" env:"LOG_LEVEL"`
+	LogFormat     string `json:"log_format" env:"LOG_FORMAT"`
+	OperationPath string `json:"operation_path" env:"OPERATION_PATH"`
 }
 
 var Config ConfigObject
@@ -30,8 +30,8 @@ func LoadConfig() {
 	}
 
 	Config = ConfigObject{
-		Host:      "",
-		Port:      -1,
+		Host:      "localhost",
+		Port:      8002,
 		LogLevel:  logger.LOG_LEVEL_INFO,
 		LogFormat: logger.LOG_FORMAT_CONSOLE,
 	}
